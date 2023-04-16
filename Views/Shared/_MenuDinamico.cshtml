@@ -1,0 +1,47 @@
+﻿@using System.Text.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpcontextAccesor;
+
+@{
+    string menuJson = HttpcontextAccesor.HttpContext.Session.GetString("menu");
+
+    List<Menu> menus = JsonSerializer.Deserialize<List<Menu>>(menuJson);
+
+
+}
+<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+    @foreach (var item in menus)
+    {
+        bool tiene_subMenu = item.InverseIdMenuPadreNavigation.Count > 0 ? true : false;
+        string claseMenu = tiene_subMenu ? "nav-item dropdown" : "nav-item";
+
+
+          <li class="@claseMenu">
+
+              @if (tiene_subMenu)
+            {
+                   <a class="nav-link dropdown-toggle" href="@item.Url" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @item.Descripcion
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              @foreach (var subMenu in item.InverseIdMenuPadreNavigation)
+                {
+                    <li><a class="dropdown-item" href="@subMenu.Url">@subMenu.Descripcion</a></li>
+                }
+            
+                </ul>
+            }
+            else
+            {
+                  <a class="nav-link " href="@item.Url" aria-current="page">
+            @item.Descripcion
+          </a>
+            }
+
+       
+        </li>
+    }
+      
+
+      </ul>
